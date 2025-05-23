@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: courier_postgis
+    environment:
+      POSTGRES_DB: courierdb
+      POSTGRES_USER: courier
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    restart: always
+
+  app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: 'courier-tracking:1.0'
+    container_name: courier-tracking
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/courierdb
+      SPRING_DATASOURCE_USERNAME: courier
+      SPRING_DATASOURCE_PASSWORD: secret
+    ports:
+      - "8100:8100"
